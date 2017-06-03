@@ -28,8 +28,14 @@ class SentryIntegration {
         }
 
         Logger.browserLogger.error("Enabling Sentry crash handler")
-        SentryClient.shared = SentryClient(dsnString: dsn)
-        SentryClient.shared?.startCrashHandler()
+        
+        do {
+            Client.shared = try Client(dsn: dsn)
+            try Client.shared?.startCrashHandler()
+        } catch let error {
+            Logger.browserLogger.error("Failed to initialize Sentry: \(error)")
+        }
+
     }
 
     var crashedLastLaunch: Bool {
@@ -37,6 +43,6 @@ class SentryIntegration {
     }
 
     func crash() {
-        SentryClient.shared?.crash()
+        Client.shared?.crash()
     }
 }
